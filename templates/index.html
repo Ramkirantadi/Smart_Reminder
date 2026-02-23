@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}SmartReminder — Schedule Your Reminder{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+  <div class="container">
+
+    <!-- Hero Text -->
+    <div class="hero-text text-center">
+      <div class="hero-badge">Email Reminders · IST Timezone</div>
+      <h1 class="hero-heading">Never Forget <em>Anything</em></h1>
+      <p class="hero-sub">Schedule a reminder and we'll send it straight to your inbox at the perfect moment.</p>
+    </div>
+
+    <!-- Card -->
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-9 col-lg-7 col-xl-6">
+        <div class="reminder-card">
+
+          <div class="card-head">
+            <span class="card-head-icon"><i class="bi bi-clock-history"></i></span>
+            <h2>Set a Reminder</h2>
+            <p>Fill in the details below and hit <strong>Schedule</strong>.</p>
+          </div>
+
+          <form action="{{ url_for('index') }}" method="POST" novalidate id="reminderForm">
+
+            <!-- Email -->
+            <div class="field-group">
+              <label for="email" class="field-label">
+                <i class="bi bi-envelope-at"></i> Your Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                class="field-input"
+                placeholder="you@example.com"
+                required
+                autocomplete="email"
+              />
+            </div>
+
+            <!-- Message -->
+            <div class="field-group">
+              <label for="message" class="field-label">
+                <i class="bi bi-chat-left-text"></i> Reminder Message
+              </label>
+              <textarea
+                id="message"
+                name="message"
+                class="field-input"
+                rows="4"
+                placeholder="E.g. Take your medicine · Call the dentist · Submit the report…"
+                required
+                maxlength="1000"
+              ></textarea>
+              <div class="char-counter"><span id="charCount">0</span> / 1000</div>
+            </div>
+
+            <!-- DateTime -->
+            <div class="field-group">
+              <label for="remind_at" class="field-label">
+                <i class="bi bi-calendar-event"></i> Date &amp; Time
+                <span class="tz-badge">IST</span>
+              </label>
+              <input
+                type="datetime-local"
+                id="remind_at"
+                name="remind_at"
+                class="field-input"
+                required
+              />
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" class="btn-submit" id="submitBtn">
+              <span class="btn-text">
+                <i class="bi bi-send-fill"></i>&nbsp; Schedule Reminder
+              </span>
+              <span class="btn-loading d-none">
+                <span class="spinner-border spinner-border-sm" role="status"></span>&nbsp; Scheduling…
+              </span>
+            </button>
+
+          </form>
+        </div>
+
+        <!-- Features Strip -->
+        <div class="features-strip">
+          <div class="feature-item">
+            <i class="bi bi-shield-lock-fill"></i>
+            <span>Private &amp; Secure</span>
+          </div>
+          <div class="feature-item">
+            <i class="bi bi-lightning-charge-fill"></i>
+            <span>Instant Delivery</span>
+          </div>
+          <div class="feature-item">
+            <i class="bi bi-globe-asia-australia"></i>
+            <span>IST Timezone</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Set min datetime to now + 2 minutes
+  const dtInput = document.getElementById('remind_at');
+  const pad = n => String(n).padStart(2, '0');
+  function setMinDateTime() {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + 2);
+    const local = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+    dtInput.min = local;
+  }
+  setMinDateTime();
+
+  // Character counter
+  const msgEl = document.getElementById('message');
+  const counter = document.getElementById('charCount');
+  msgEl.addEventListener('input', () => {
+    counter.textContent = msgEl.value.length;
+  });
+
+  // Loading state on submit
+  document.getElementById('reminderForm').addEventListener('submit', function () {
+    const btn = document.getElementById('submitBtn');
+    btn.querySelector('.btn-text').classList.add('d-none');
+    btn.querySelector('.btn-loading').classList.remove('d-none');
+    btn.disabled = true;
+  });
+</script>
+{% endblock %}
